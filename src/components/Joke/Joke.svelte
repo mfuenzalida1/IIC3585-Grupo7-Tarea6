@@ -3,6 +3,7 @@
     import { getContext } from 'svelte';
     import { get, set, remove } from '../../services/local-storage-service.js';
     import { Constants } from '../../constants.js';
+    import { fade } from 'svelte/transition';
 
     const { open } = getContext('simple-modal');
     export let joke;
@@ -56,24 +57,21 @@
         <div class="inline">
             <a on:click={saveJoke(joke)} class="pure-button pure-button-primary inline-btn">Guardar</a>
             <a on:click={openDialog(joke)} class="pure-button pure-button-primary inline-btn">Compartir</a>
-            <h6 class="joke-item inline"> {joke} </h6>
+            <h6 class="joke-item inline" transition:fade> {joke} </h6>
         </div>
-    {/if}
-    {#if myJokes.has(joke) && !savedList}
+    {:else if myJokes.has(joke) && !savedList}
         <div class="inline">
             <a class="pure-button pure-button-primary inline-btn">Guardado</a>
             <a on:click={openDialog(joke)} class="pure-button pure-button-primary inline-btn">Compartir</a>
-            <h6 class="joke-item inline"> {joke} </h6>
+            <h6 class="joke-item inline" transition:fade> {joke} </h6>
         </div>
-    {/if}
-    {#if myJokes.has(joke) && savedList}
+    {:else if myJokes.has(joke) && savedList}
         <div class="inline">
             <a on:click={removeJoke(joke)} class="pure-button pure-button-primary inline-btn">Eliminar</a>
             <a on:click={openDialog(joke)} class="pure-button pure-button-primary inline-btn">Compartir</a>
-            <h6 class="joke-item inline"> {joke} </h6>
+            <h6 class="joke-item inline" transition:fade> {joke} </h6>
         </div>
-    {/if}
-    {#if myJokes.size === 0 && savedList}
+    {:else}
         <h1>No tienes chistes guardados</h1>
     {/if}
 </div>

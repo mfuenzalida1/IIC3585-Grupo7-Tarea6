@@ -133,8 +133,7 @@
                     {#if displayList}
                         {#if jokeList.size === 0 && !searching}
                             <h4>No se encontraron chistes</h4>
-                        {/if}
-                        {#if jokeList.size !== 0}
+                        {:else}
                             <ul>
                                 {#each [...jokeList.keys()] as joke}
                                     <li class="nobull">
