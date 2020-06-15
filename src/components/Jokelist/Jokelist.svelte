@@ -1,9 +1,11 @@
 <script>
     import Joke from '../Joke/Joke.svelte';
     import { getJoke, getRandomJoke } from '../../services/joke-service.js';
+    import { get, set, remove } from '../../services/local-storage-service.js';
+    import { Constants } from '../../constants.js';
 
     let jokeList = new Set();
-    let myJokes = new Set();
+    let myJokes = new Set(get(Constants.KEY_SAVED_JOKES));
     let searchInput = '';
     let displayList = false;
     let displayMyList = false;
@@ -65,29 +67,19 @@
     };
 
     const getSavedJokes = () => {
-        console.log("hola");
-        return true;
-    };
-
-    const removeJoke = (joke) => {
-        console.log("hola");
-        return true;
-    };
-
-    const openDialog = (joke) => {
-        console.log("hola");
-        return true;
+        displayMyList = true;
     };
 
     const clearSearch = () => {
         displayList = false;
         jokeList = new Set();
         searching = false;
+        myJokes = new Set(get(Constants.KEY_SAVED_JOKES));
     };
 
     const exitMyList = () => {
-        console.log("hola");
-        return true;
+        displayMyList = false;
+        myJokes = new Set(get(Constants.KEY_SAVED_JOKES));
     };
 
     
@@ -146,7 +138,7 @@
                             <ul>
                                 {#each [...jokeList.keys()] as joke}
                                     <li class="nobull">
-                                        <Joke joke={joke} myJokes={myJokes}/>
+                                        <Joke joke={joke} myJokes={myJokes} savedList={displayMyList}/>
                                     </li>
                                 {/each}
                             </ul>
@@ -163,9 +155,7 @@
                             <ul>
                                 {#each [...myJokes.keys()] as joke}
                                     <li class="nobull inline">
-                                        <a on:click={() => removeJoke(joke)} class="pure-button pure-button-primary inline-btn">Eliminar</a>
-                                        <a on:click={() => openDialog(joke)} class="pure-button pure-button-primary inline-btn">Compartir</a>
-                                        <h6 class="joke-item inline"> {{joke}} </h6>
+                                        <Joke joke={joke} myJokes={myJokes} savedList={displayMyList}/>
                                     </li>
                                 {/each}
                             </ul>

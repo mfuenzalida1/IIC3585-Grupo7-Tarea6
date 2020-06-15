@@ -1,31 +1,80 @@
 <script>
+    import Dialog from '../ShareDialog/ShareDialog.svelte';
+    import { getContext } from 'svelte';
+    import { get, set, remove } from '../../services/local-storage-service.js';
+    import { Constants } from '../../constants.js';
 
+    const { open } = getContext('simple-modal');
     export let joke;
     export let myJokes;
+    export let savedList;
+
     const saveJoke = (joke) => {
-        return true;
+        myJokes = new Set(get(Constants.KEY_SAVED_JOKES));
+        if (myJokes === null) {
+            myJokes = new Set();
+        }
+        myJokes.add(joke);
+        set(Constants.KEY_SAVED_JOKES, Array.from(myJokes));
     };
 
+    const shareByEmail = (joke) => {
+        location.href = `mailto:?subject=Te comparto un chiste muy bueno que encontre!!&body=${joke}`;
+    }
+
+    const shareByWhatsapp = (joke) => {
+        joke = joke.replace(' ', '%20');
+        window.open(`https://api.whatsapp.com/send?phone=&text=${joke}`, "_blank");
+    }
+
     const openDialog = (joke) => {
-        return true;
+        open(
+			Dialog,
+			{
+				joke: joke,
+				shareByWhatsapp,
+				shareByEmail
+			},
+			{
+                closeButton: false,
+                closeOnEsc: true,
+    		    closeOnOuterClick: true,
+			}
+	    );
+    };
+
+    const removeJoke = (joke) => {
+        myJokes.delete(joke);
+        set(Constants.KEY_SAVED_JOKES, Array.from(myJokes));
+        myJokes = myJokes
     };
 
 </script>
 
 <div>
-    {#if !myJokes.has(joke)}
+    {#if !myJokes.has(joke) && !savedList}
         <div class="inline">
             <a on:click={saveJoke(joke)} class="pure-button pure-button-primary inline-btn">Guardar</a>
             <a on:click={openDialog(joke)} class="pure-button pure-button-primary inline-btn">Compartir</a>
             <h6 class="joke-item inline"> {joke} </h6>
         </div>
     {/if}
-    {#if myJokes.has(joke)}
+    {#if myJokes.has(joke) && !savedList}
         <div class="inline">
             <a class="pure-button pure-button-primary inline-btn">Guardado</a>
             <a on:click={openDialog(joke)} class="pure-button pure-button-primary inline-btn">Compartir</a>
             <h6 class="joke-item inline"> {joke} </h6>
         </div>
+    {/if}
+    {#if myJokes.has(joke) && savedList}
+        <div class="inline">
+            <a on:click={removeJoke(joke)} class="pure-button pure-button-primary inline-btn">Eliminar</a>
+            <a on:click={openDialog(joke)} class="pure-button pure-button-primary inline-btn">Compartir</a>
+            <h6 class="joke-item inline"> {joke} </h6>
+        </div>
+    {/if}
+    {#if myJokes.size === 0 && savedList}
+        <h1>No tienes chistes guardados</h1>
     {/if}
 </div>
 

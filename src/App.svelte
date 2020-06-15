@@ -1,6 +1,7 @@
 <script>
 	import { onMount, setContext } from "svelte";
 	import Jokelist from "./components/Jokelist/Jokelist.svelte";
+	import Modal from "./Modal.svelte"
 
 </script>
 
@@ -14,7 +15,9 @@
 		<title>JokesOnYou</title>
 	</head>
 
-	<Jokelist />
+	<Modal>
+		<Jokelist/>
+	</Modal>
 </main>
 
 <style>
